@@ -1,129 +1,70 @@
-# Bike Sharing Demand Forecasting
+# Bike Rental Demand Prediction
 
 ## Project Overview
 
-This project focuses on forecasting hourly bike-sharing demand using historical rental data and machine learning regression models. The goal was to identify patterns in bike usage, compare different models, and improve prediction performance through hyperparameter tuning.
+This project focuses on analyzing hourly bike rental demand and developing regression models to predict the number of bike rentals based on seasonal, calendar, and weather-related factors.
 
-The project follows an end-to-end workflow, from exploratory data analysis and feature engineering to model evaluation and interpretation.
-
-## Objectives
-
-- Analyze historical bike-sharing demand and identify usage patterns.
-- Develop and compare multiple regression models.
-- Establish a seasonal-naive baseline for comparison.
-- Improve model performance through hyperparameter tuning.
-- Evaluate predictions using appropriate regression metrics.
+The project uses historical bike-sharing data from Washington, D.C., to explore demand patterns, evaluate predictive performance, and understand model errors and prediction bias.
 
 ## Dataset
 
-- **Source:** OpenML Bike Sharing Demand dataset
-- **Observations:** 17,379 hourly records
-- **Features:** 15 columns, including the date and an additional experimental promotion flag
-- **Target variable:** `count` — hourly bike rental demand
+The project uses the original [UCI Bike Sharing Dataset](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset), specifically the hourly dataset (`hour.csv`).
 
-Key features include:
-- **Time-based:** Season, year, month, hour, weekday
-- **Weather-related:** Temperature, feels-like temperature, humidity, wind speed, weather conditions
-- **Calendar-related:** Holiday and working-day indicators
+- **Records:** 17,379 hourly observations
+- **Time Period:** 2011–2012
+- **Location:** Washington, D.C.
+- **Target Variable:** `demand` — hourly bike rental count
 
-## Tools & Technologies
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Scikit-learn
-- Jupyter Notebook
+The dataset includes information about season, year, month, hour, weather conditions, temperature, humidity, wind speed, holidays, and working days.
 
 ## Project Workflow
 
-### 1. Data Preprocessing and EDA
-- Inspected dataset structure, data types, and missing values.
-- Analyzed demand patterns across hours, weekdays, seasons, and promotional periods.
-- Explored relationships between weather conditions and bike demand.
+1. Data loading and inspection
+2. Exploratory Data Analysis (EDA)
+3. Data cleaning and feature preparation
+4. Chronological train-test split and time-series cross-validation
+5. Baseline model development
+6. Random Forest Regressor development and evaluation
+7. Model evaluation using MAE, RMSE, WMAPE, and Mean Error
+8. Prediction error and bias analysis
+9. Comparison with a model using a Poisson objective
+10. Findings, limitations, and conclusions
 
-### 2. Train-Test Split
-Used a chronological 80/20 train-test split instead of randomly shuffling observations. This preserved the time order and helped evaluate the models on future observations.
+## Model Evaluation
 
-- **Training set:** 13,903 observations
-- **Test set:** 3,476 observations
+The final Random Forest model was evaluated on an untouched test set using a chronological split to preserve the time-based order of observations.
 
-### 3. Baseline Model
-Established a seasonal-naive baseline using demand from the same hour in the previous week (`shift(168)`).
-
-This provided a reference point to determine whether machine learning models could improve upon a simple historical forecasting approach.
-
-### 4. Model Development
-Trained and compared the following regression models:
-
-- Linear Regression
-- Decision Tree Regressor
-- Random Forest Regressor
-- Gradient Boosting Regressor
-- XGBoost
-- LightGBM
-- CatBoost
-
-### 5. Hyperparameter Tuning
-Experimented with model parameters such as tree depth, number of estimators, learning rate, minimum samples per split, and minimum samples per leaf to improve prediction performance.
-
-### 6. Model Evaluation
-Evaluated model performance using Mean Absolute Percentage Error (MAPE) and Weighted Absolute Percentage Error (WMAPE).
-
-WMAPE was also considered to understand total absolute prediction error relative to total actual demand, particularly when demand varied substantially across hours.
-
-## Results
-
-### Model Comparison
-
-| Model | MAPE |
+| Evaluation Metric | Result |
 |---|---:|
-| Linear Regression | 358.59% |
-| Decision Tree — tuned | 41.90% |
-| Random Forest — initial | 38.01% |
-| Random Forest — tuned | **36.66%** |
-| Gradient Boosting — tuned | 51.23% |
-| XGBoost — tuned | 54.90% |
-| LightGBM — tuned | 44.32% |
-| CatBoost | 56.56% |
+| MAE | 44.99 |
+| RMSE | 69.56 |
+| WMAPE | 18.09% |
+| Mean Error | -16.48 |
 
-*Results reflect the evaluated model configurations in this project. The tuned Random Forest achieved the lowest MAPE among the models tested.*
+### Understanding the Results
 
-### Final Model: Random Forest Regressor
+- **MAE:** The model's predictions differ from actual hourly demand by approximately 45 rentals on average.
+- **RMSE:** Penalizes larger prediction errors more heavily than MAE.
+- **WMAPE:** The total absolute prediction error represents 18.09% of the total actual rental demand.
+- **Mean Error:** The negative value indicates an overall tendency to underpredict demand.
 
-The selected model used the following parameters:
+## Prediction Error Analysis
 
-- `n_estimators = 100`
-- `max_depth = 15`
-- `min_samples_split = 20`
-- `min_samples_leaf = 2`
-- `random_state = 42`
+Additional analysis was performed to understand where the model makes larger prediction errors and whether its predictions show a consistent bias.
 
-**Final evaluation:**
-- **MAPE:** 36.66%
-- **WMAPE:** 21.38%
+This included examining actual versus predicted demand, identifying observations with larger errors, and comparing prediction errors across different hours.
 
-The tuned model improved on the initial Random Forest configuration, reducing MAPE from 38.01% to 36.66%.
+## Tools and Technologies
 
-## Key Findings
-
-- Bike demand varied considerably by hour, with demand generally peaking between 4 PM and 6 PM.
-- Midweek demand was generally higher than weekend demand.
-- Weather and seasonal patterns were useful factors to investigate when understanding demand.
-- The tuned Random Forest outperformed the other evaluated models on the primary MAPE metric.
-- Performance on an unseen winter period was weaker, with MAPE around 41%, highlighting the challenge of forecasting across changing seasonal conditions.
-- The experimental promotion-flag analysis showed differences in average demand between flagged and non-flagged observations. These results should be interpreted in the context of how the flag was constructed.
-
-## Limitations and Future Improvements
-
-- Use walk-forward validation to evaluate model consistency across multiple future periods.
-- Investigate systematic overprediction and underprediction through bias analysis.
-- Compare hourly and daily forecasting performance.
-- Further investigate feature engineering, seasonal patterns, and promotion effects.
-- Evaluate model performance across different demand levels and seasonal segments.
+- Python
+- Pandas and NumPy
+- Matplotlib and Seaborn
+- Scikit-learn
+- Jupyter Notebook
+- Power BI
 
 ## Conclusion
 
-This project provided practical experience in regression-based forecasting, time-aware data splitting, model comparison, hyperparameter tuning, and evaluation using multiple error metrics.
+The project demonstrates an end-to-end regression workflow, from exploratory data analysis and feature preparation to model evaluation and error analysis.
 
-It also highlighted that selecting a forecasting model involves more than minimizing one metric: validation strategy, error direction, seasonal changes, and the intended business use all matter.
+A chronological validation and testing approach was used to evaluate the model while respecting the temporal structure of the dataset.

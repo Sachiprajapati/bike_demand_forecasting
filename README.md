@@ -27,8 +27,6 @@ The dataset includes information about season, year, month, hour, weather condit
 6. Random Forest Regressor development and evaluation
 7. Model evaluation using MAE, RMSE, WMAPE, and Mean Error
 8. Prediction error and bias analysis
-9. Comparison with a model using a Poisson objective
-10. Findings, limitations, and conclusions
 
 ## Model Evaluation
 
